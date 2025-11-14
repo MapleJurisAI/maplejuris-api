@@ -105,7 +105,7 @@ files=(
     "schemas/chat_agent_schemas.py" "schemas/chat_graph_schemas.py" "schemas/chat_agent_examples_schemas.py"
     "prompt_templates/chat_agent_prompt_template_system.md" "prompt_templates/chat_agent_prompt_template_human.md"
     "prompt_templates/prompt_template_loader.py"
-    ".env" ".gitignore"
+    ".env" ".gitignore" "readme.md"
 )
 
 for file in "${files[@]}"; do
