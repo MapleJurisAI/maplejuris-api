@@ -9,6 +9,7 @@ uvicorn = "*"
 pydantic = "*"
 sqlalchemy = "*"
 langchain-core = "*"
+dotenv = "*"
 
 [dev-packages]
 black = "*"
