@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = "*"
 pydantic = "*"
 sqlalchemy = "*"
+langchain-core = "*"
 
 [dev-packages]
 black = "*"
