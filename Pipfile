@@ -10,6 +10,7 @@ pydantic = "*"
 sqlalchemy = "*"
 langchain-core = "*"
 dotenv = "*"
+langchain-openai = "*"
 
 [dev-packages]
 black = "*"

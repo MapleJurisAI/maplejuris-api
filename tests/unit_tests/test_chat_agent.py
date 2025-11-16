@@ -1,7 +1,7 @@
 """Tests for ChatAgent class."""
 
 import logging
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -14,12 +14,16 @@ class TestChatAgent:
 
     @pytest.fixture
     def chat_agent(self):
-        """Fixture to create a ChatAgent instance.
+        """Fixture to create a ChatAgent instance with mocked LLM.
 
         Returns:
-            ChatAgent: An instance of the chat agent.
+            ChatAgent: An instance of the chat agent with mocked LLM.
         """
-        return ChatAgent(model_name="gpt-4")
+        # Mock ChatOpenAI to avoid needing API key
+        with patch("agents.chat_agent.ChatOpenAI") as mock_llm:
+            mock_llm.return_value = MagicMock()
+            agent = ChatAgent(model_name="gpt-4")
+            return agent
 
     def test_initialization_success(self, chat_agent):
         """Test that ChatAgent instance is created successfully.
