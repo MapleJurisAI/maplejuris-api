@@ -11,6 +11,7 @@ sqlalchemy = "*"
 langchain-core = "*"
 dotenv = "*"
 langchain-openai = "*"
+langgraph = "*"
 
 [dev-packages]
 black = "*"
