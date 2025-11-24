@@ -21,5 +21,9 @@ class ChatGraphState(BaseModel):
     """
 
     question: str = Field(..., description="The user's input question")
-    answer: str = Field(default="", description="The agent's response to the question")
-    error: str = Field(default="", description="Error message if processing fails")
+    answer: str | None = Field(
+        default="", description="The agent's response to the question"
+    )
+    error: str | None = Field(
+        default="", description="Error message if processing fails"
+    )
