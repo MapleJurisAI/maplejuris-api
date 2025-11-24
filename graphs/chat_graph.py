@@ -153,14 +153,36 @@ if __name__ == "__main__":
     try:
         logger.info("Starting chat graph demo")
         chat_graph = ChatGraph()
-        question = "What is the capital of Canada?"
 
-        result = chat_graph.run(question=question)
+        print("\n" + "=" * 50)
+        print("Chat Graph Demo - Ask questions about Canadian law")
+        print("Type 'exit', 'quit', or 'q' to stop")
+        print("=" * 50 + "\n")
 
-        print(f"\nQuestion: {result.question}")
-        print(f"Answer: {result.answer}")
-        if result.error:
-            print(f"Error: {result.error}")
+        while True:
+            # Get user input
+            question = input("\nYour question: ").strip()
 
+            # Check for exit commands
+            if question.lower() in ["exit", "quit", "q", ""]:
+                print("\nExiting chat graph demo. Goodbye!")
+                break
+
+            # Process question
+            try:
+                result = chat_graph.run(question=question)
+
+                print(f"\n{'─'*50}")
+                print(f"Answer: {result.answer}")
+                if result.error:
+                    print(f"Error: {result.error}")
+                print(f"{'─'*50}")
+
+            except Exception as e:
+                logger.error(f"Error processing question: {e}")
+                print(f"\n❌ Error: {e}")
+
+    except KeyboardInterrupt:
+        print("\n\nInterrupted by user. Exiting...")
     except Exception as e:
         logger.error(f"Failed to run chat graph demo: {e}")
