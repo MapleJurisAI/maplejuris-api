@@ -1,10 +1,9 @@
 """
-FastAPI application entry point with OOP design.
-Main application class with middleware, CORS, and lifecycle management.
+FastAPI application entry point with Secret Manager integration.
+Reads PORT environment variable for Cloud Run deployment.
 """
 
 import os
-from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,27 +30,17 @@ class MapleJurisAPI:
     def __init__(self):
         self.logger = Logger().get_logger()
         self.version = "1.0.0"
-        self.app = self._create_app()
-        self._configure_middleware()
-        self._register_routes()
-        # Load secrets
-        self.api_key_1 = get_secret("API_KEY_1")  # Example
-
-    def _create_app(self) -> FastAPI:
-        return FastAPI(
+        self.app = FastAPI(
             title="MapleJuris AI API",
             description="AI-powered Canadian legal research assistant",
             version=self.version,
             docs_url="/docs",
             redoc_url="/redoc",
-            lifespan=self._lifespan,
         )
-
-    @asynccontextmanager
-    async def _lifespan(self, app: FastAPI):
-        self.logger.info("MapleJuris AI API starting up...")
-        yield
-        self.logger.info("MapleJuris AI API shutting down...")
+        self._configure_middleware()
+        self._register_routes()
+        # Load secrets
+        self.api_key_1 = get_secret("API_KEY_1")  # Example
 
     def _configure_middleware(self):
         self.app.add_middleware(
@@ -65,14 +54,13 @@ class MapleJurisAPI:
     def _register_routes(self):
         self.app.include_router(router, prefix="/api")
 
-    def get_app(self) -> FastAPI:
+    def get_app(self):
         return self.app
 
 
 # Create app instance
 api = MapleJurisAPI()
 app = api.get_app()
-
 
 if __name__ == "__main__":
     import uvicorn
