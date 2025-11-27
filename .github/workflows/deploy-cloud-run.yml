@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
   workflow_dispatch:  # Allow manual trigger
 
 env:
@@ -53,6 +54,7 @@ jobs:
             --platform managed \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
+            --service-account github-actions-deployer@maplejuris-production.iam.gserviceaccount.com \
             --port 8080 \
             --memory 512Mi \
             --cpu 1 \
