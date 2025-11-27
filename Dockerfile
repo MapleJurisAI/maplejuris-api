@@ -1,26 +1,22 @@
 # Base image
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential curl \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency files
+# Copy dependencies
 COPY Pipfile Pipfile.lock ./
 
 # Install pipenv and dependencies
-RUN pip install --no-cache-dir pipenv && \
-    pipenv install --system --deploy
+RUN pip install --no-cache-dir pipenv && pipenv install --system --deploy
 
-# Copy application code
+# Copy code
 COPY . .
 
-# Expose port (Cloud Run uses PORT env variable)
+# Expose port (Cloud Run uses PORT)
 EXPOSE 8080
 
-# Run the application, reading PORT from env
-CMD ["python", "api/main.py"]
+# Correct CMD: use exec form and environment variable
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]
