@@ -1,4 +1,4 @@
-# Use official Python runtime as base image
+# Base image
 FROM python:3.11-slim
 
 # Set working directory
@@ -6,8 +6,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
+    build-essential curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency files
@@ -23,6 +22,5 @@ COPY . .
 # Expose port (Cloud Run uses PORT env variable)
 EXPOSE 8080
 
-# Run the application
-# Cloud Run sets PORT environment variable
-CMD uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8080}
+# Run the application, reading PORT from env
+CMD ["python", "api/main.py"]

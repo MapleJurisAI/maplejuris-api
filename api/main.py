@@ -1,6 +1,6 @@
 """
-FastAPI application entry point with Secret Manager integration.
-Reads PORT environment variable for Cloud Run deployment.
+FastAPI entry point for MapleJuris AI API.
+Reads PORT environment variable and fetches secrets from Secret Manager.
 """
 
 import os
@@ -16,7 +16,7 @@ logger = Logger().get_logger()
 
 
 def get_secret(secret_name: str):
-    """Fetch secret value from Google Secret Manager."""
+    """Fetch secret from Google Secret Manager."""
     client = secretmanager.SecretManagerServiceClient()
     project_id = os.environ.get("PROJECT_ID", "maplejuris-production")
     name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
@@ -25,8 +25,6 @@ def get_secret(secret_name: str):
 
 
 class MapleJurisAPI:
-    """Main API application class."""
-
     def __init__(self):
         self.logger = Logger().get_logger()
         self.version = "1.0.0"
@@ -40,7 +38,7 @@ class MapleJurisAPI:
         self._configure_middleware()
         self._register_routes()
         # Load secrets
-        self.api_key_1 = get_secret("API_KEY_1")  # Example
+        self.api_key_1 = get_secret("API_KEY_1")  # Example secret
 
     def _configure_middleware(self):
         self.app.add_middleware(
@@ -58,10 +56,11 @@ class MapleJurisAPI:
         return self.app
 
 
-# Create app instance
+# Application instance
 api = MapleJurisAPI()
 app = api.get_app()
 
+# Entry point for Cloud Run
 if __name__ == "__main__":
     import uvicorn
 
