@@ -1,8 +1,10 @@
-"""FastAPI application entry point with OOP design.
+"""
+FastAPI application entry point with OOP design.
 
 Main application class with middleware, CORS, and lifecycle management.
 """
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -26,11 +28,7 @@ class MapleJurisAPI:
         self._register_routes()
 
     def _create_app(self) -> FastAPI:
-        """Create FastAPI application instance.
-
-        Returns:
-            Configured FastAPI app
-        """
+        """Create FastAPI application instance."""
         return FastAPI(
             title="MapleJuris AI API",
             description="AI-powered Canadian legal research assistant",
@@ -42,23 +40,17 @@ class MapleJurisAPI:
 
     @asynccontextmanager
     async def _lifespan(self, app: FastAPI):
-        """Manage application lifecycle.
-
-        Args:
-            app: FastAPI application instance
-        """
-        # Startup
+        """Manage application lifecycle."""
         self.logger.info("MapleJuris AI API starting up...")
         self.logger.info("Documentation available at /docs")
         yield
-        # Shutdown
         self.logger.info("MapleJuris AI API shutting down...")
 
     def _configure_middleware(self):
         """Configure application middleware."""
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],  # Update with specific origins in production
+            allow_origins=["*"],  # Update for production
             allow_credentials=True,
             allow_methods=["*"],
             allow_headers=["*"],
@@ -69,11 +61,7 @@ class MapleJurisAPI:
         self.app.include_router(router, prefix="/api")
 
     def get_app(self) -> FastAPI:
-        """Get the FastAPI application.
-
-        Returns:
-            Configured FastAPI app
-        """
+        """Get the FastAPI application."""
         return self.app
 
 
@@ -85,11 +73,14 @@ app = api.get_app()
 if __name__ == "__main__":
     import uvicorn
 
-    logger.info("Starting development server...")
+    # Cloud Run sets the PORT environment variable
+    port = int(os.environ.get("PORT", 8080))
+    logger.info(f"Starting development server on port {port}...")
+
     uvicorn.run(
         "api.main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=port,
+        reload=True,  # Keep True for dev, you can set False in prod
         log_level="info",
     )
