@@ -60,7 +60,7 @@ jobs:
             --cpu 1 \
             --min-instances 0 \
             --max-instances 10 \
-            --set-secrets API_KEY_1=API_KEY_1:latest
+            --set-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest
 
       - name: Show service URL
         run: |
