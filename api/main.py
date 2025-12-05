@@ -37,8 +37,6 @@ class MapleJurisAPI:
         )
         self._configure_middleware()
         self._register_routes()
-        # Load secrets
-        self.api_key_1 = get_secret("API_KEY_1")  # Example secret
 
     def _configure_middleware(self):
         self.app.add_middleware(
