@@ -11,6 +11,7 @@ env:
   REGION: us-central1
   SERVICE_NAME: maplejuris-api
   REPOSITORY_NAME: maplejuris-api-repo
+  # Correct repository name
   ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
 
 jobs:
