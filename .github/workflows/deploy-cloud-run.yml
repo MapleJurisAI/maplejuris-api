@@ -57,6 +57,7 @@ jobs:
             --platform managed \
             --region "${{ env.REGION }}" \
             --allow-unauthenticated \
+            --service-account maplejuris-api-sa@maplejuris-ai.iam.gserviceaccount.com \
             --memory 512Mi \
             --cpu 1 \
             --min-instances 0 \
