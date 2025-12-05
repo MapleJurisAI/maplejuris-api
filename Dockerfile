@@ -20,4 +20,4 @@ EXPOSE 8080
 
 # Correct CMD: use exec form and environment variable
 # Use PORT environment variable
-CMD uvicorn api.main:app --host 0.0.0.0 --port $PORT
+CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port $PORT"]
