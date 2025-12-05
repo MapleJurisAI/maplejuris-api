@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT_ID: maplejuris-production
+  PROJECT_ID: maplejuris-ai
   REGION: us-central1
   SERVICE_NAME: maplejuris-api
-  REPOSITORY_NAME: maplejuris-api   # Correct repository name
+  REPOSITORY_NAME: maplejuris-api-repo
   ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
 
 jobs:
