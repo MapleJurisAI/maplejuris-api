@@ -19,4 +19,5 @@ COPY . .
 EXPOSE 8080
 
 # Correct CMD: use exec form and environment variable
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Use PORT environment variable
+CMD uvicorn api.main:app --host 0.0.0.0 --port $PORT
