@@ -12,6 +12,7 @@ langchain-core = "*"
 dotenv = "*"
 langchain-openai = "*"
 langgraph = "*"
+google-cloud-secret-manager = "*"
 
 [dev-packages]
 black = "*"
@@ -26,3 +27,4 @@ pytest = "*"
 
 [requires]
 python_version = "3.13"
+
