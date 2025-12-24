@@ -1,10 +1,16 @@
-name: Deploy to Cloud Run
+name: Deploy to Cloud Run (DEPRECATED)
+
+# =============================================================================
+# DEPRECATED: This workflow is disabled. Use deploy-gke.yml instead.
+# Keeping for reference during migration.
+# =============================================================================
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  # Disabled - uncomment to re-enable
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:  # Can still run manually if needed
 
 env:
   PROJECT_ID: maplejuris-ai

@@ -1,0 +1,89 @@
+name: Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: maplejuris-ai
+  REGION: us-central1
+  ZONE: us-central1-a
+  CLUSTER_NAME: maplejuris-cluster
+  REPOSITORY_NAME: maplejuris-containers
+  ARTIFACT_REGISTRY: us-central1-docker.pkg.dev
+  SERVICE_NAME: maplejuris-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY_GKE }}"
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install gke-gcloud-auth-plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin --quiet
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }} --quiet
+
+      - name: Build and Tag Docker Image
+        run: |
+          IMAGE="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}"
+          docker build -t "$IMAGE:${{ github.sha }}" -t "$IMAGE:latest" .
+
+      - name: Push Docker Image
+        run: |
+          IMAGE="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}"
+          docker push "$IMAGE:${{ github.sha }}"
+          docker push "$IMAGE:latest"
+
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} \
+            --zone ${{ env.ZONE }} \
+            --project ${{ env.PROJECT_ID }}
+
+      - name: Deploy to GKE
+        run: |
+          # Set image in deployment manifest
+          export IMAGE="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          
+          # Apply Kubernetes manifests
+          envsubst < k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+          
+          # Wait for rollout
+          kubectl rollout status deployment/${{ env.SERVICE_NAME }} --timeout=300s
+
+      - name: Show deployment status
+        run: |
+          echo "=== Deployment ==="
+          kubectl get deployment ${{ env.SERVICE_NAME }}
+          echo ""
+          echo "=== Pods ==="
+          kubectl get pods -l app=${{ env.SERVICE_NAME }}
+          echo ""
+          echo "=== Service ==="
+          kubectl get service ${{ env.SERVICE_NAME }}
+          echo ""
+          echo "=== Ingress ==="
+          kubectl get ingress maplejuris-ingress
+
