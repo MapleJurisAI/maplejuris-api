@@ -13,6 +13,7 @@ dotenv = "*"
 langchain-openai = "*"
 langgraph = "*"
 google-cloud-secret-manager = "*"
+slack-sdk = "*"
 
 [dev-packages]
 black = "*"
@@ -27,4 +28,3 @@ pytest = "*"
 
 [requires]
 python_version = "3.13"
-

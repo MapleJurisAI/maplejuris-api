@@ -3,8 +3,11 @@
 Defines all API endpoints using dependency injection and class-based design.
 """
 
+import os
+
 from fastapi import HTTPException, Request, status
 from fastapi.routing import APIRouter as FastAPIRouter
+from slack_sdk import WebClient
 
 from graphs.chat_graph import ChatGraph
 from schemas.api_schemas import ChatResponse, HealthResponse, QuestionRequest
@@ -75,6 +78,13 @@ class RouteManager:
         self.chat_service = ChatService()
         self.health_service = HealthService()
         self.logger = Logger().get_logger()
+
+        # Initialize Slack client
+        slack_token = os.getenv("SLACK_BOT_TOKEN")
+        self.slack_client = WebClient(token=slack_token) if slack_token else None
+        if not slack_token:
+            self.logger.warning("SLACK_BOT_TOKEN not set - Slack integration disabled")
+
         self._register_routes()
 
     def _register_routes(self):
@@ -162,14 +172,25 @@ class RouteManager:
                 if event.get("type") == "app_mention":
                     # Extract question (remove bot mention)
                     text = event.get("text", "").split(">", 1)[-1].strip()
+                    channel = event.get("channel")
+
                     self.logger.info(f"Processing Slack question: {text[:50]}...")
 
                     # Get response from chat service
                     response = self.chat_service.process_question(text)
 
-                    # TODO: Send response back to Slack channel
-                    # Will implement this next with Slack client
-                    self.logger.info(f"Generated response: {response.answer[:50]}...")
+                    # Send response back to Slack channel
+                    if self.slack_client and channel:
+                        self.slack_client.chat_postMessage(
+                            channel=channel,
+                            text=response.answer
+                            or "Sorry, I couldn't process that question.",
+                        )
+                        self.logger.info("Response sent to Slack")
+                    else:
+                        self.logger.warning(
+                            "Slack client not configured or channel missing"
+                        )
 
             return {"ok": True}
 
