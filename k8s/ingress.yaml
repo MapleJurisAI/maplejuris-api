@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: maplejuris-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "maplejuris-ingress-ip"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: maplejuris-api
+                port:
+                  number: 80
+
