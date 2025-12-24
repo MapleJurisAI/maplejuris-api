@@ -30,6 +30,13 @@ spec:
                 secretKeyRef:
                   name: maplejuris-secrets
                   key: openai-api-key
+                  
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: maplejuris-secrets
+                  key: slack-bot-token
+
           resources:
             requests:
               memory: "256Mi"
