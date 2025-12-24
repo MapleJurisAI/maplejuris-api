@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib
 COPY Pipfile Pipfile.lock ./
 
 # Install pipenv and dependencies
-RUN pip install --no-cache-dir pipenv && pipenv install --system --deploy
+RUN pip install --no-cache-dir pipenv && pipenv install --system --deploy --skip-lock
 
 # Copy code
 COPY . .
