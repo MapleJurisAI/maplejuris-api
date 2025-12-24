@@ -3,7 +3,7 @@
 Defines all API endpoints using dependency injection and class-based design.
 """
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 from fastapi.routing import APIRouter as FastAPIRouter
 
 from graphs.chat_graph import ChatGraph
@@ -98,6 +98,15 @@ class RouteManager:
             description="Submit a question about Canadian law and receive an AI-generated answer.",
         )
 
+        self.router.add_api_route(
+            "/slack/events",
+            self.slack_events,
+            methods=["POST"],
+            tags=["Slack"],
+            summary="Handle Slack events",
+            description="Receive and process Slack events including URL verification and messages.",
+        )
+
     async def health_check(self) -> HealthResponse:
         """Health check endpoint.
 
@@ -127,6 +136,46 @@ class RouteManager:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Failed to process question. Please try again.",
             )
+
+    async def slack_events(self, request: Request):
+        """Handle Slack events and URL verification.
+
+        Args:
+            request: Slack event request
+
+        Returns:
+            Challenge response or event acknowledgment
+        """
+        try:
+            body = await request.json()
+            self.logger.info(f"Slack event received: {body.get('type')}")
+
+            # Slack URL verification
+            if body.get("type") == "url_verification":
+                self.logger.info("Slack URL verification received")
+                return {"challenge": body["challenge"]}
+
+            # Handle message events
+            if body.get("type") == "event_callback":
+                event = body.get("event", {})
+
+                if event.get("type") == "app_mention":
+                    # Extract question (remove bot mention)
+                    text = event.get("text", "").split(">", 1)[-1].strip()
+                    self.logger.info(f"Processing Slack question: {text[:50]}...")
+
+                    # Get response from chat service
+                    response = self.chat_service.process_question(text)
+
+                    # TODO: Send response back to Slack channel
+                    # Will implement this next with Slack client
+                    self.logger.info(f"Generated response: {response.answer[:50]}...")
+
+            return {"ok": True}
+
+        except Exception as e:
+            self.logger.error(f"Slack event error: {e}")
+            return {"ok": False}
 
     def get_router(self) -> FastAPIRouter:
         """Get the configured router.
