@@ -36,6 +36,25 @@ spec:
                 secretKeyRef:
                   name: maplejuris-secrets
                   key: slack-bot-token
+            - name: SQL_HOST
+              value: "postgresql.default.svc.cluster.local"
+            - name: SQL_PORT
+              value: "5432"
+            - name: SQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: username
+            - name: SQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: password
+            - name: SQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: database
 
           resources:
             requests:
