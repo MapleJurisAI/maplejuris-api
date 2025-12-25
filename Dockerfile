@@ -4,6 +4,7 @@ FROM python:3.13-slim
 WORKDIR /app
 
 # Install system dependencies
+# Note: psycopg2-binary doesn't require PostgreSQL dev libraries, but keeping build-essential for other packages
 RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
 # Copy dependencies
